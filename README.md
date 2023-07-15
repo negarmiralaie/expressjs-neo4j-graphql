@@ -34,3 +34,16 @@ MATCH (n) RETURN n => Return all nodes
 
 To get all players only
 Match (n) RETURN 
+
+-------------------------------------------
+#### Each type in your GraphQL type definitions can be mapped to an entity in your Neo4j database.
+##### The most basic mapping is of GraphQL types to Neo4j nodes, where the GraphQL type name maps to the Neo4j node label.
+
+
+
+--------------------------------------------
+1. Open neo4j desktop -> create a project
+2. Click on +Add button to add a local DBMS
+3. Set a password for the DBMS
+4. Click on start btn to activate db.
+5. Then click on Start -> To open neo4j browser.

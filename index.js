@@ -1,41 +1,46 @@
-const {Neo4jGraphQL} = require('@neo4j/graphql');
-const {ApolloServer, gql} = require('apollo-server');
-const neo4j = require('neo4j-driver');
-require ('dotenv/config');
+import express from 'express';
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
+import { Neo4jGraphQL } from "@neo4j/graphql";
+import neo4j from "neo4j-driver";
+import 'dotenv/config';
 
-// Tells us everything about the data in our graphql api
-const typeDefs = gql`
-    type Movie {
-        title: String
+const driver = neo4j.driver(
+    "neo4j://localhost:7687",
+    neo4j.auth.basic("neo4j", "12345678")
+);
+
+const typeDefs = `#graphql
+    type Todo {
+        id: ID!
+        title: String!
+        completed: Boolean!
     }
 `;
 
-const driver = neo4j.driver(
-    process.env.NEO4J_URI,
-    neo4j.auth.basic('neo4j', process.env.NEO4J_PASSWORD)
-);
+const neoSchema = new Neo4jGraphQL({ typeDefs, driver });
 
-const neoSchema = new Neo4jGraphQL({typeDefs});
+const todoList = [];
+
+const app = express();
+app.use(express.urlencoded({extended: true}));
 
 const server = new ApolloServer({
-    schema: neoSchema.schema
+    schema: await neoSchema.getSchema(),
 });
 
-server.listen().then(({url}) => {
-    console.log(`GraphQl server is ready at ${url}`);
+
+app.get("/todo/list", (req, res) => {
+    res.json(todoList);
 });
 
-// const driver = neo4j.driver(process.env.NEO4J_URI, neo4j.auth.basic('neo4j', process.env.NEO4J_PASSWORD));
+app.post("/todo", (req, res) => {
+    todoList.push(req.body);
+});
 
-// const serverInfo = driver.getServerInfo();
+const { url } = await startStandaloneServer(server, {
+    context: async ({ req }) => ({ req }),
+    listen: { port: 4000 },
+});
 
-// const neoSchema = new Neo4jGraphQL({ typeDefs, driver });
-
-// const server = new ApolloServer({
-//   schema: neoSchema.getSchema(),
-// });
-
-// const { url } = startStandaloneServer(server, {
-//   context: async ({ req }) => ({ req }),
-//   listen: { port: 4000 },
-// });
+console.log(`🚀 Server ready at ${url}`);
