@@ -47,3 +47,9 @@ Match (n) RETURN
 3. Set a password for the DBMS
 4. Click on start btn to activate db.
 5. Then click on Start -> To open neo4j browser.
+
+------------------------------------------
+##### Yes, you can definitely have multiple routes in a GraphQL project. It's just that with GraphQL, all requests (queries, mutations, and subscriptions) are usually sent to a single endpoint, often /graphql. This is different from REST APIs, where you have separate endpoints for different resources. However, this doesn't mean that you cannot have multiple endpoints in a GraphQL server. It's just not the common practice.
+
+------------------------------------------
+###### Instead of using Express routes (app.get and app.post) to handle GraphQL queries and mutations, you should be using GraphQL resolvers.
