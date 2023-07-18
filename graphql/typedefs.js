@@ -13,6 +13,11 @@ const typeDefs = `#graphql
         todos: [Todo!]! @relationship(type: "HAS_TODO", direction: IN)
     }
 
+    type AuthPayload {
+        token: String!
+        user: User!
+    }
+
     type Query {
         todos: [Todo]
         users: [User]
@@ -20,6 +25,8 @@ const typeDefs = `#graphql
 
     type Mutation {
         addTodo(title: String!, completed: Boolean!): Todo
+        signup(name: String!, password: String!): AuthPayload
+        login(name: String!, password: String!): AuthPayload
     }
 `;
 
@@ -30,6 +37,11 @@ export default typeDefs;
 //! todos: [Todo]   // It means that there's a todos query that returns an array of Todo objects. The Todo type would be defined elsewhere in your schema.
 //! type Mutation { //This is a special type that represents all of the write operations that can be performed. Any data that you send to your server to create, update, or delete is done through a mutation.
 //!  addTodo(title: String!, completed: Boolean!): Todo     //It means that there's an addTodo mutation that takes a title argument of type String and a completed argument of type Boolean, and returns a Todo object. The ! after String and Boolean means that these arguments are required.
+//! todos: [Todo!]! @relationship(type: "HAS_TODO", direction: OUT)    //The @relationship directive specifies that a User HAS_TODO. The direction: OUT means the relationship goes from User to Todo
+
+
+//! Neo4j is schema-optional, meaning that it's not necessary to create indexes and constraints. You can create data—nodes, relationships and properties—without defining a schema up front. Indexes and constraints can be introduced when desired, in order to gain performance or modeling benefits
+
 
 //! BY USING NEO4J-GRAPHQL, WE DEFINE ONLY ONE SCHEMA, ACTUALLY A TYPE DEFINITION FOR GRAPHQL ->  
 //! Neo4j-GraphQL uses a single GraphQL schema to interact with the Neo4j database. This is part of the power and convenience of using Neo4j-GraphQL. You may find it surprising, but it comes down to the clever way that Neo4j-GraphQL auto-generates queries.
