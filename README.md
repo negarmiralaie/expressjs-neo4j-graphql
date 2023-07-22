@@ -76,3 +76,47 @@ Match (n) RETURN
     3. type mutation: Includes functions to work with entities, like a function to add a user to db, or a function to get all todos in db.
 > Note that these code actually are written instead of defining routes in rest api.
 -------------------------------------------
+-------------------------------------------
+-------------------------------------------
+-------------------------------------------
+-------------------------------------------
+### Open http://localhost:4000/graphql
+0. Open Neo4j desktop Auora and start sb.
+
+1. To create a todo:
+
+
+2. To see the list of todos:
+    query {
+      todos {
+        id
+        title
+        completed
+      }
+    }
+
+3. To update a todo using id:
+  mutation Mutation($updateTodoId: ID!, $title: String) {
+  updateTodo(id: $updateTodoId, title: $title) {
+    id
+    title
+  }
+}
+
+4. To delete a todo using id:
+  mutation Mutation($deleteTodoId2: ID!) {
+    deleteTodo(id: $deleteTodoId2)
+  }
+
+5. To see signup functionality:
+    mutation {
+    signup(name: "test", password: "test") {
+        token
+        user {
+        id
+        name
+        }
+    }
+    }
+
+6. 

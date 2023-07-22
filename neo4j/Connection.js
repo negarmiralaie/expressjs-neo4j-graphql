@@ -1,6 +1,9 @@
 import neo4j from 'neo4j-driver';
-import { Neo4jGraphQL } from '@neo4j/graphql';
-import { Neo4jGraphQLAuthJWTPlugin } from '@neo4j/graphql-plugin-auth';
+// import { Neo4jGraphQL } from '@neo4j/graphql';
+import { Neo4jGraphQL } from "@neo4j/graphql";
+import pkg from '@neo4j/graphql-plugin-auth';
+const { Neo4jGraphQLAuthJWTPlugin } = pkg;
+// import { Neo4jGraphQLAuthJWTPlugin } from '@neo4j/graphql-plugin-auth';
 import 'dotenv/config';
 import typeDefs from '../graphql/typedefs.js';
 import resolvers from '../graphql/resolvers.js';
