@@ -1,5 +1,8 @@
 // * Here, functions get stubbed functions as a argument to use them rather than jwt/bcrypt functions.
 // * Note that these stubs are used only if provided so that in production, eal functions are used and in test, stubs are used
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+
 export function generateAccessToken(user, mockSign = jwt.sign) {
     const accessToken = mockSign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1800s' });
     return accessToken;
