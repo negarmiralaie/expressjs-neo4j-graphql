@@ -27,7 +27,7 @@ const neoSchema = new Neo4jGraphQL({
     context: ({ req }) => {
         const token = req.headers.authorization || '';
         try { //! The try block attempts to verify the JWT token using the secret key. If the token is valid, it will decode the payload of the token, which includes the userId. This userId is then assigned to the userId variable declared earlier.
-            const user = jwt.verify(token, process.env.TOKEN_SECRET); //! This line retrieves the JWT token from the Authorization header of the HTTP request. If no token is provided, it defaults to an empty string.
+            const user = jwt.verify(token, process.env.TOKEN_SECRET); //! This line retrieves the JWT token = require the Authorization header of the HTTP request. If no token is provided, it defaults to an empty string.
             return { user }; //! This line declares a variable userId that will hold the ID of the authenticated user.
         } catch (e) {
             console.log('Failed to authenticate'); //! return { userId }; Finally, the context function returns an object that includes the userId. This object is passed to every resolver as the context argument, so they can access the authenticated user's ID

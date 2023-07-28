@@ -1,9 +1,8 @@
 //! resolvers: For handling GraphQL queries and mutations using the provided functions.
 //! Resolver actually combines Queries and Mutations...
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4} from 'uuid';
 import { neoSchema } from '../neo4j/Connection.js';
+import { generateAccessToken, validatePassword, hashPassword } from '../components/Auth.js';
 
 const resolvers = {
     User: {
@@ -19,16 +18,6 @@ const resolvers = {
             // Otherwise, return the todos
             return todos.records.map(record => record.get('t').properties);
         },
-    },
-    Query: {
-        // !!!! YOU DO NOT NEED TO WRITE QUERY FOR TODOS SINCE IT IS AUTOMATICALLY WRITTEN BY NEO4J-GRAPHQL LIBRARY
-        // todos: async (_, __, context) => {
-
-        // },
-        // !!!! YOU DO NOT NEED TO WRITE QUERY FOR USERS SINCE IT IS AUTOMATICALLY WRITTEN BY NEO4J-GRAPHQL LIBRARY
-        // users: async (_, __, context) => {
-            
-        // },
     },
     Mutation: {
         // Create todo mutation
@@ -79,35 +68,45 @@ const resolvers = {
 
         signup: async (_, { name, password }, { driver }) => {
             const session = neoSchema.driver.session();
+            const query = `
+                MATCH (u:User { name: $name, password: $password })
+                RETURN u
+            `;
+
+            const repeatedUserResult = await session.run(query, {name, password});
+            if (repeatedUserResult.records.length !== 0) throw new Error('User already exists!!!');
+
             const id = uuidv4();
-            const hashedPassword = await bcrypt.hash(password, 10);
+            const hashedPassword = await hashPassword(password);
             const result = await session.run(
                 `CREATE (u:User {id: $id, name: $name, password: $hashedPassword}) RETURN u`,
                 { id, name, hashedPassword }
             );
-            
+
             session.close();
             const user = result.records[0].get('u').properties;
-            const token = jwt.sign({ userId: user.id }, 'JWT_SECRET');
+            const token = generateAccessToken(user);
             return { token, user };
         },
 
         login: async (_, args, context, info) => {
             const session = driver.session();
             try {
-            const query = `
-                MATCH (u:User { name: $name, password: $password })
-                RETURN u
-            `;
-            const result = await session.run(query, args);
-            if (result.records.length === 0)
-                throw new Error('Invalid login credentials');
-            return {
-                token: 'simple_token', // Note: You should return a JWT token here
-                user: result.records[0].get('u').properties,
-            };
+                const query = `
+                    MATCH (u:User { name: $name, password: $password })
+                    RETURN u
+                `;
+
+                const result = await session.run(query, args);
+                if (result.records.length === 0) throw new Error('Invalid login credentials');
+
+                const user = result.records[0].get('u').properties;
+                console.log('user', user);
+                const token = generateAccessToken(user);
+
+                return { token, user };
             } finally {
-            session.close();
+                session.close();
             }
         },
     },

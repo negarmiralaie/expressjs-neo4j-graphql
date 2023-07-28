@@ -7,20 +7,23 @@ import 'dotenv/config';
 // ********************************************* END OF PACKAGE IMPORTS **********************************
 import { driver, neoSchema } from './neo4j/Connection.js';
 // ********************************************* END OF FILE IMPORTS *************************************
-const session = driver.session();
-//************************************** */
-const todoList = [];
 
-const app = express();
-app.use(express.urlencoded({extended: true}));
+const startApolloServer = async () => {
+    const session = driver.session();
 
-const server = new ApolloServer({
-    schema: await neoSchema.getSchema(),
-    context: {
-        db: neoSchema.driver.session(),
-    }
-});
+    const app = express();
+    app.use(express.urlencoded({extended: true}));
 
-await server.start();
-app.use(server.getMiddleware());
-app.listen(4000, () => console.log(`🚀 Server ready at http://localhost:4000`));
+    const server = new ApolloServer({
+        schema: await neoSchema.getSchema(),
+        context: {
+            db: neoSchema.driver.session(),
+        }
+    });
+
+    await server.start();
+    app.use(server.getMiddleware());
+    app.listen(4000, () => console.log(`🚀 Server ready at http://localhost:4000`));
+};
+
+startApolloServer();

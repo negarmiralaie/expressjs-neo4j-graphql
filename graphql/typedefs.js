@@ -10,6 +10,7 @@ const typeDefs = `#graphql
     type User {
         id: ID!
         name: String!
+        password: String! @private
         todos: [Todo!]! @relationship(type: "HAS_TODO", direction: IN)
     }
 
